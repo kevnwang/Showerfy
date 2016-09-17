@@ -164,11 +164,23 @@ public class MainActivity extends Activity implements
 
 
                 long mins = TimeUnit.MILLISECONDS.toMinutes(timeDiff);
-                if (mins <= 2)
-                    points += 20;
-                else
-                    points += 20 / (mins - 2);
+
+                if (timeDiff <= 10000) {
+                    pointsText.setText("You are the Flash");
+                    pointsText.postDelayed(new Runnable() {
+                        public void run() {
+                            pointsText.setText("Points: " + points);
+                        }
+                    }, 2000);
+
+                } else {
+                    if (mins <= 2)
+                        points += 20;
+                    else
+                        points += 20 / (mins - 2);
+
                 pointsText.setText("Points: " + points);
+        }
                 prefs.edit().putInt("points", points).apply();
 
                 long dt=timeDiff - songDuration;
