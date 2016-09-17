@@ -23,9 +23,9 @@ public class RecordsActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_records);
 
-        histoEntries.add(new IndividualRecord("500000000", "My Gospel","100000", "20"));
-        histoEntries.add(new IndividualRecord("1010000000", "Cheap Thrills","200000", "10"));
-        histoEntries.add(new IndividualRecord("2000100000", "Take Me to Church","60000", "0"));
+        histoEntries.add(new IndividualRecord("9/12", "My Gospel","100000", "20"));
+        histoEntries.add(new IndividualRecord("9/13", "Cheap Thrills","200000", "10"));
+        histoEntries.add(new IndividualRecord("9/14", "Take Me to Church","60000", "0"));
 
         RecordAdapter listadapter = new RecordAdapter(this, R.layout.record_indiv, histoEntries);
         ListView listView = (ListView) findViewById(android.R.id.list);
