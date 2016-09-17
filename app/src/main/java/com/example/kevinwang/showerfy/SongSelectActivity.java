@@ -30,6 +30,7 @@ public class SongSelectActivity extends Activity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_songselect);
 
         songSelectList = (ListView) findViewById(R.id.listView);
@@ -42,9 +43,10 @@ public class SongSelectActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 int itemPosition = position;
                 String itemValue = (String) songSelectList.getItemAtPosition(position);
-                Intent returnIntent = new Intent();
+                Intent returnIntent = new Intent(SongSelectActivity.this,MainActivity.class);
                 returnIntent.putExtra("song", songUris[itemPosition]);
                 setResult(Activity.RESULT_OK, returnIntent);
+                startActivity(returnIntent);
                 finish();
             }
         });

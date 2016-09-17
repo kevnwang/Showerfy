@@ -32,9 +32,11 @@ public class MainActivity extends Activity implements
     private static final String REDIRECT_URI = "showerfybigredhacks://callback";
 
     ImageButton bigButton;
+    ImageButton smallButton;
     TextView bigText, pointsText;
     private int state = 0;
     private int points = 0;
+    private int songNum = 0; //notes whether song playing is 1st or 2nd
     private SharedPreferences prefs;
 
     private static String activeUri = "spotify:track:7GhIk7Il098yCjg4BQjzvb";
@@ -67,6 +69,15 @@ public class MainActivity extends Activity implements
         pointsText.setText("Points: " + points);
 
         addButtonListener();
+        addSmallButtonListener();
+
+        Bundle songName = getIntent().getExtras();
+        if(songName==null){
+            return;
+        }
+        activeUri = songName.getString("song");
+
+
     }
 
     private void addButtonListener() {
@@ -78,6 +89,30 @@ public class MainActivity extends Activity implements
                 handleClick();
             }
         });
+
+    }
+
+    private void addSmallButtonListener(){
+        smallButton = (ImageButton) findViewById(R.id.imageButton2);
+        smallButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                handleMusicClick();
+            }
+        });
+
+    }
+
+    private void checkIfSongEnd(){
+
+    }
+
+    private void handleMusicClick(){
+        setContentView(R.layout.activity_main);
+
+        Intent songSelect = new Intent(this, SongSelectActivity.class);
+        startActivityForResult(songSelect, 0);
+        finish();
     }
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -175,9 +210,19 @@ public class MainActivity extends Activity implements
     public void onPlaybackEvent(EventType eventType, PlayerState playerState) {
         Log.d("MainActivity", "Playback event received: " + eventType.name());
         switch (eventType) {
-            // Handle event type as necessary
+            case TRACK_END:
+                    songNum++;
+                break;
             default:
                 break;
+        }
+
+        if(songNum==2){
+            //Will be replaced by sth else
+            Toast t = Toast.makeText(getApplicationContext(),"END of two songs!", Toast.LENGTH_LONG);
+            t.show();
+
+            songNum=0;
         }
     }
 
@@ -185,7 +230,7 @@ public class MainActivity extends Activity implements
     public void onPlaybackError(ErrorType errorType, String errorDetails) {
         Log.d("MainActivity", "Playback error received: " + errorType.name());
         switch (errorType) {
-            // Handle error type as necessary
+               // Handle error type as necessary
             default:
                 break;
         }
