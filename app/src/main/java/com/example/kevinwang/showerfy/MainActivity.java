@@ -64,7 +64,7 @@ public class MainActivity extends Activity implements
         prefs = getPreferences(0);
         points = prefs.getInt("points", 0);
         pointsText = (TextView) findViewById(R.id.text_points);
-        pointsText.setText("Points: " + points);
+        pointsText.setText(String.format("Points: %d", points));
 
         addButtonListener();
     }
