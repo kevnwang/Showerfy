@@ -42,13 +42,10 @@ public class MainActivity extends Activity implements
 
     private SharedPreferences prefs;
 
-    private static List<String> activeUris = new ArrayList<String>(); //activeUris.add("spotify:track:7GhIk7Il098yCjg4BQjzvb");
-    private String[] chosenSongs;
+    private static String chosenSong = "spotify:track:7GhIk7Il098yCjg4BQjzvb";
 
     private Calendar timerStart;
 
-    // Request code that will be passed together with authentication result to the onAuthenticationResult callback
-    // Can be any integer
     private static final int REQUEST_CODE = 1337;
 
     private Player mPlayer;
@@ -74,15 +71,6 @@ public class MainActivity extends Activity implements
         pointsText.setText(String.format("Points: %d", points));
 
         addButtonListeners();
-
-        Bundle songNames = getIntent().getExtras();
-
-        if(songNames!=null){
-            chosenSongs = songNames.getStringArray("songs");
-            for(int i=0;i<chosenSongs.length;i++){
-                activeUris.add(chosenSongs[i]);
-            }
-        }
     }
 
     private void addButtonListeners() {
@@ -113,12 +101,12 @@ public class MainActivity extends Activity implements
     }
 
 
-    private void handleMusicClick(){
+    private void handleMusicClick() {
         Intent songSelect = new Intent(this, SongSelectActivity.class);
-        startActivityForResult(songSelect, 0);
+        startActivityForResult(songSelect, 1);
     }
 
-    private void handleHistoClick(){
+    private void handleHistoClick() {
         Intent histoView = new Intent(this, RecordsActivity.class);
         startActivity(histoView);
     }
@@ -127,7 +115,8 @@ public class MainActivity extends Activity implements
     private void handleClick() {
         switch (state) {
             case 0:
-                mPlayer.play(activeUris.get(songNum));
+                //mPlayer.play(activeUris.get(songNum));
+                mPlayer.play(chosenSong);
                 bigButton.setImageResource(R.drawable.icons2);
                 bigText.setText("Shower!");
                 state = 1;
@@ -161,7 +150,6 @@ public class MainActivity extends Activity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
 
-        // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
             if (response.getType() == AuthenticationResponse.Type.TOKEN) {
@@ -181,11 +169,10 @@ public class MainActivity extends Activity implements
                     }
                 });
             }
-        }
-        else if (requestCode == 1) {
+        } else if (requestCode == 1) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                chosenSongs = intent.getStringArrayExtra("song");
+                chosenSong = intent.getStringExtra("song");
             }
         }
     }
@@ -220,22 +207,15 @@ public class MainActivity extends Activity implements
         Log.d("MainActivity", "Playback event received: " + eventType.name());
         switch (eventType) {
             case END_OF_CONTEXT:
-                    songNum++;
-                    if(songNum<NUM_OF_SONGS){
-                        state=0;
-                        handleClick();
-                    }
+                /*songNum++;
+                if (songNum < NUM_OF_SONGS) {
+                    state = 0;
+                    handleClick();
+                }*/
+                state = 0;
                 break;
             default:
                 break;
-        }
-
-        if(songNum==NUM_OF_SONGS){
-            //Will be replaced by sth else
-            Toast t = Toast.makeText(getApplicationContext(),"END of two songs!", Toast.LENGTH_LONG);
-            t.show();
-
-            songNum=0;
         }
     }
 
@@ -243,7 +223,7 @@ public class MainActivity extends Activity implements
     public void onPlaybackError(ErrorType errorType, String errorDetails) {
         Log.d("MainActivity", "Playback error received: " + errorType.name());
         switch (errorType) {
-               // Handle error type as necessary
+            // Handle error type as necessary
             default:
                 break;
         }
