@@ -231,7 +231,7 @@ public class MainActivity extends Activity implements
             Toast t = Toast.makeText(getApplicationContext(),"END of two songs!", Toast.LENGTH_LONG);
             t.show();
 
-            songNum=0;
+
         }
     }
 

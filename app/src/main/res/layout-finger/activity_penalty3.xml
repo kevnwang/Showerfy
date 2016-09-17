@@ -27,12 +27,12 @@
         android:textAlignment="center" />
 
     <TextView
-        android:layout_width="152dp"
+        android:layout_width="185dp"
         android:layout_height="315dp"
         android:id="@+id/textView3"
-        android:text="The amount of extra water used is the same as X water bottles!"
         android:textSize="30dp"
-        android:layout_gravity="right" />
+        android:layout_gravity="right"
+        android:text="You essentially killed X gorillas..." />
 
     <Button
         android:layout_width="wrap_content"
