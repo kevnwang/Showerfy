@@ -78,9 +78,7 @@ public class MainActivity extends Activity implements
                 bigText.setText("Press to Shower");
                 state = 0;
                 break;
-
         }
-
     }
 
     @Override
