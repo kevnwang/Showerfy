@@ -3,6 +3,7 @@ package com.example.kevinwang.showerfy;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -10,6 +11,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by kevinwang on 9/17/16.
@@ -32,6 +34,8 @@ public class SongSelectActivity extends Activity {
             "spotify:track:7BKLCZ1jbUBVqRi2FVlTVw"
     };
 
+    private String[] chosenSongs = new String[2];
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -48,10 +52,17 @@ public class SongSelectActivity extends Activity {
                 int itemPosition = position;
                 String itemValue = (String) songSelectList.getItemAtPosition(position);
                 Intent returnIntent = new Intent(SongSelectActivity.this,MainActivity.class);
-                returnIntent.putExtra("song", songUris[itemPosition]);
-                setResult(Activity.RESULT_OK, returnIntent);
-                startActivity(returnIntent);
-                finish();
+                if(chosenSongs[0]==null){
+                    chosenSongs[0]=(songUris[itemPosition]);
+                }
+                else {
+                    chosenSongs[1]=(songUris[itemPosition]);
+                    returnIntent.putExtra("songs", chosenSongs);
+                    setResult(Activity.RESULT_OK, returnIntent);
+                    startActivity(returnIntent);
+                    finish();
+
+                }
             }
         });
 

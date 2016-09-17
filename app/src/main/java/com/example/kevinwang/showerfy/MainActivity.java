@@ -23,6 +23,8 @@ import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerNotificationCallback;
 import com.spotify.sdk.android.player.PlayerState;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends Activity implements
@@ -39,7 +41,9 @@ public class MainActivity extends Activity implements
     private int songNum = 0; //notes whether song playing is 1st or 2nd
     private SharedPreferences prefs;
 
-    private static String activeUri = "spotify:track:7GhIk7Il098yCjg4BQjzvb";
+    private static List<String> activeUris = new ArrayList<String>(); //activeUris.add("spotify:track:7GhIk7Il098yCjg4BQjzvb");
+    private String[] chosenSongs;
+
     private Calendar timerStart;
 
     // Request code that will be passed together with authentication result to the onAuthenticationResult callback
@@ -71,13 +75,16 @@ public class MainActivity extends Activity implements
         addButtonListener();
         addSmallButtonListener();
 
-        Bundle songName = getIntent().getExtras();
-        if(songName==null){
-            return;
+        Bundle songNames = getIntent().getExtras();
+        Toast t = Toast.makeText(getApplicationContext(),String.valueOf(songNames==null), Toast.LENGTH_LONG);
+        t.show();
+        if(songNames!=null){
+            chosenSongs = songNames.getStringArray("songs");
+            for(int i=0;i<chosenSongs.length;i++){
+                activeUris.add(chosenSongs[i]);
+            }
+
         }
-        activeUri = songName.getString("song");
-
-
     }
 
     private void addButtonListener() {
@@ -103,9 +110,6 @@ public class MainActivity extends Activity implements
 
     }
 
-    private void checkIfSongEnd(){
-
-    }
 
     private void handleMusicClick(){
         setContentView(R.layout.activity_main);
@@ -119,7 +123,7 @@ public class MainActivity extends Activity implements
     private void handleClick() {
         switch (state) {
             case 0:
-                mPlayer.play(activeUri);
+                mPlayer.play(activeUris);
                 bigButton.setImageResource(R.drawable.icons2);
                 bigText.setText("Shower!");
                 state = 1;
@@ -176,7 +180,7 @@ public class MainActivity extends Activity implements
         else if (requestCode == 1) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                activeUri = intent.getStringExtra("song");
+                chosenSongs = intent.getStringArrayExtra("song");
             }
         }
     }
