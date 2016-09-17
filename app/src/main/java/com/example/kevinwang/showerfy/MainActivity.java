@@ -50,6 +50,9 @@ public class MainActivity extends Activity implements
 
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
 
+        Intent songSelect = new Intent(this, SongSelectActivity.class);
+        startActivityForResult(songSelect, 1);
+
         addButtonListener();
     }
 
@@ -103,6 +106,13 @@ public class MainActivity extends Activity implements
                         Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
                     }
                 });
+            }
+        }
+        if (requestCode == 1) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                Toast toast = Toast.makeText(getApplicationContext(), intent.getStringExtra("song"), Toast.LENGTH_SHORT);
+                toast.show();
             }
         }
     }

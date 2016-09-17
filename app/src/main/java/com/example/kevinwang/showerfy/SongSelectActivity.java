@@ -1,16 +1,53 @@
 package com.example.kevinwang.showerfy;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 /**
  * Created by kevinwang on 9/17/16.
  */
 public class SongSelectActivity extends Activity {
-    @Override
+    private ListView songSelectList;
+    private ArrayAdapter<String> adapter;
+    private final String[] songTitles = new String[]{
+            "Rick Roll",
+            "No Way No",
+            "Sandstorm"
+    };
+    private final String[] songUris = new String[]{
+            "spotify:track:7GhIk7Il098yCjg4BQjzvb",
+            "spotify:track:5xHooj89TQoQHj3dALvSh1",
+            "spotify:track:3XWZ7PNB3ei50bTPzHhqA6"
+    };
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_songselect);
+
+        songSelectList = (ListView) findViewById(R.id.listView);
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, songTitles);
+
+        songSelectList.setAdapter(adapter);
+
+        songSelectList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                int itemPosition = position;
+                String itemValue = (String) songSelectList.getItemAtPosition(position);
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("song", itemValue);
+                setResult(Activity.RESULT_OK, returnIntent);
+                finish();
+            }
+        });
 
     }
 }
