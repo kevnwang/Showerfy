@@ -1,8 +1,11 @@
 package com.example.kevinwang.showerfy;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.icu.util.Calendar;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -20,12 +23,12 @@ import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerNotificationCallback;
 import com.spotify.sdk.android.player.PlayerState;
 
+import java.util.concurrent.TimeUnit;
+
 public class MainActivity extends Activity implements
         PlayerNotificationCallback, ConnectionStateCallback {
 
-    // TODO: Replace with your client ID
     private static final String CLIENT_ID = "f023aedf8bf34ea5a638ae933f41e944";
-    // TODO: Replace with your redirect URI
     private static final String REDIRECT_URI = "showerfybigredhacks://callback";
 
     ImageButton bigButton;
@@ -35,7 +38,7 @@ public class MainActivity extends Activity implements
     private SharedPreferences prefs;
 
     private static String activeUri = "spotify:track:7GhIk7Il098yCjg4BQjzvb";
-
+    private Calendar timerStart;
 
     // Request code that will be passed together with authentication result to the onAuthenticationResult callback
     // Can be any integer
@@ -59,7 +62,7 @@ public class MainActivity extends Activity implements
         startActivityForResult(songSelect, 1);
 
         prefs = getPreferences(0);
-        points = prefs.getInt("points",0);
+        points = prefs.getInt("points", 0);
         pointsText = (TextView) findViewById(R.id.text_points);
         pointsText.setText("Points: " + points);
 
@@ -77,22 +80,36 @@ public class MainActivity extends Activity implements
         });
     }
 
-    private void handleClick(){
-        switch (state){
+    @TargetApi(Build.VERSION_CODES.N)
+    private void handleClick() {
+        switch (state) {
             case 0:
                 mPlayer.play(activeUri);
                 bigButton.setImageResource(R.drawable.icons2);
                 bigText.setText("Shower!");
                 state = 1;
+                timerStart = Calendar.getInstance();
                 break;
             case 1:
                 mPlayer.pause();
                 bigButton.setImageResource(R.drawable.icons);
                 bigText.setText("Press to Shower");
                 state = 0;
-                points ++;
-                pointsText.setText("Points: " + points);
                 prefs.edit().putInt("points", points).apply();
+                long timeDiff = Calendar.getInstance().getTimeInMillis() - timerStart.getTimeInMillis();
+                Toast t = Toast.makeText(getApplicationContext(), "Shower time: " + String.format("%d min, %d sec",
+                        TimeUnit.MILLISECONDS.toMinutes(timeDiff),
+                        TimeUnit.MILLISECONDS.toSeconds(timeDiff) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeDiff))
+                ), Toast.LENGTH_LONG);
+                t.show();
+
+                long mins = TimeUnit.MILLISECONDS.toMinutes(timeDiff);
+                if (mins <= 2)
+                    points += 20;
+                else
+                    points += 20 / (mins - 2);
+                pointsText.setText("Points: " + points);
                 break;
         }
     }
