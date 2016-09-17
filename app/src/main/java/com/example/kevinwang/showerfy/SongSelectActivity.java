@@ -3,7 +3,6 @@ package com.example.kevinwang.showerfy;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -11,7 +10,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by kevinwang on 9/17/16.
@@ -19,7 +17,6 @@ import java.util.List;
 public class SongSelectActivity extends Activity {
     private ListView songSelectList;
     private ArrayAdapter<String> adapter;
-    private int arrIndex=0; //helps assign songs in playlist.
     private final String[] songTitles = new String[]{
             "Rick Roll",
             "No Way No",
@@ -35,16 +32,9 @@ public class SongSelectActivity extends Activity {
             "spotify:track:0NSrjAJuxYqZiJ3sotJa6h"
     };
 
-    private String[] chosenSongs;
-
     protected void onCreate(Bundle savedInstanceState) {
-
-
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_songselect);
-
-        chosenSongs = new String[2];
 
         songSelectList = (ListView) findViewById(R.id.listView);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, songTitles);
@@ -56,20 +46,11 @@ public class SongSelectActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 int itemPosition = position;
                 String itemValue = (String) songSelectList.getItemAtPosition(position);
-                Intent returnIntent = new Intent(SongSelectActivity.this,MainActivity.class);
-                if(arrIndex<MainActivity.NUM_OF_SONGS-1){
-                    chosenSongs[arrIndex]=(songUris[itemPosition]);
-                    arrIndex++;
-                }
-                else {
-                    chosenSongs[arrIndex]=(songUris[itemPosition]);
-                    arrIndex=0;
-                    returnIntent.putExtra("songs", chosenSongs);
-                    setResult(Activity.RESULT_OK, returnIntent);
-                    startActivity(returnIntent);
-                    finish();
-
-                }
+                Intent returnIntent = new Intent();
+                String[] song = {songUris[itemPosition], songTitles[itemPosition]};
+                returnIntent.putExtra("song", song);
+                setResult(Activity.RESULT_OK, returnIntent);
+                finish();
             }
         });
 

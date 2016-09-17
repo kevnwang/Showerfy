@@ -33,9 +33,8 @@ public class MainActivity extends Activity implements
     private static final String CLIENT_ID = "f023aedf8bf34ea5a638ae933f41e944";
     private static final String REDIRECT_URI = "showerfybigredhacks://callback";
 
-    ImageButton bigButton;
-    ImageButton smallButton;
-    TextView bigText, pointsText;
+    ImageButton bigButton, smallButton, histoButton;
+    TextView bigText, pointsText, songText;
     private int state = 0;
     private int points = 0;
     private int songNum = 0; //notes whether song playing is 1st or 2nd
@@ -43,13 +42,11 @@ public class MainActivity extends Activity implements
 
     private SharedPreferences prefs;
 
-    private static List<String> activeUris = new ArrayList<String>(); //activeUris.add("spotify:track:7GhIk7Il098yCjg4BQjzvb");
-    private String[] chosenSongs;
+    private static String chosenSong = "spotify:track:7GhIk7Il098yCjg4BQjzvb";
+    private static String songTitle = "Take Me to Church";
 
     private Calendar timerStart;
 
-    // Request code that will be passed together with authentication result to the onAuthenticationResult callback
-    // Can be any integer
     private static final int REQUEST_CODE = 1337;
 
     private Player mPlayer;
@@ -74,21 +71,10 @@ public class MainActivity extends Activity implements
         pointsText = (TextView) findViewById(R.id.text_points);
         pointsText.setText(String.format("Points: %d", points));
 
-        addButtonListener();
-        addSmallButtonListener();
-
-        Bundle songNames = getIntent().getExtras();
-
-        if(songNames!=null){
-            chosenSongs = songNames.getStringArray("songs");
-            for(int i=0;i<chosenSongs.length;i++){
-                activeUris.add(chosenSongs[i]);
-            }
-
-        }
+        addButtonListeners();
     }
 
-    private void addButtonListener() {
+    private void addButtonListeners() {
         bigButton = (ImageButton) findViewById(R.id.imageButton);
         bigText = (TextView) findViewById(R.id.text1);
         bigButton.setOnClickListener(new View.OnClickListener() {
@@ -98,9 +84,6 @@ public class MainActivity extends Activity implements
             }
         });
 
-    }
-
-    private void addSmallButtonListener(){
         smallButton = (ImageButton) findViewById(R.id.imageButton2);
         smallButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,22 +92,32 @@ public class MainActivity extends Activity implements
             }
         });
 
+        histoButton = (ImageButton) findViewById(R.id.imageButton3);
+        histoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                handleHistoClick();
+            }
+        });
     }
 
 
-    private void handleMusicClick(){
-        setContentView(R.layout.activity_main);
-
+    private void handleMusicClick() {
         Intent songSelect = new Intent(this, SongSelectActivity.class);
-        startActivityForResult(songSelect, 0);
-        finish();
+        startActivityForResult(songSelect, 1);
+    }
+
+    private void handleHistoClick() {
+        Intent histoView = new Intent(this, RecordsActivity.class);
+        startActivity(histoView);
     }
 
     @TargetApi(Build.VERSION_CODES.N)
     private void handleClick() {
         switch (state) {
             case 0:
-                mPlayer.play(activeUris.get(songNum));
+                //mPlayer.play(activeUris.get(songNum));
+                mPlayer.play(chosenSong);
                 bigButton.setImageResource(R.drawable.icons2);
                 bigText.setText("Shower!");
                 state = 1;
@@ -158,7 +151,6 @@ public class MainActivity extends Activity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
 
-        // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
             if (response.getType() == AuthenticationResponse.Type.TOKEN) {
@@ -166,6 +158,7 @@ public class MainActivity extends Activity implements
                 mPlayer = Spotify.getPlayer(playerConfig, this, new Player.InitializationObserver() {
                     @Override
                     public void onInitialized(Player player) {
+                        mPlayer = player;
                         mPlayer.addConnectionStateCallback(MainActivity.this);
                         mPlayer.addPlayerNotificationCallback(MainActivity.this);
                         //mPlayer.play("spotify:track:2TpxZ7JUBn3uw46aR7qd6V");
@@ -177,11 +170,11 @@ public class MainActivity extends Activity implements
                     }
                 });
             }
-        }
-        else if (requestCode == 1) {
+        } else if (requestCode == 1) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                chosenSongs = intent.getStringArrayExtra("song");
+                chosenSong = intent.getStringArrayExtra("song")[0];
+                songTitle = intent.getStringArrayExtra("song")[1];
             }
         }
     }
@@ -216,22 +209,15 @@ public class MainActivity extends Activity implements
         Log.d("MainActivity", "Playback event received: " + eventType.name());
         switch (eventType) {
             case END_OF_CONTEXT:
-                    songNum++;
-                    if(songNum<NUM_OF_SONGS){
-                        state=0;
-                        handleClick();
-                    }
+                /*songNum++;
+                if (songNum < NUM_OF_SONGS) {
+                    state = 0;
+                    handleClick();
+                }*/
+                state = 0;
                 break;
             default:
                 break;
-        }
-
-        if(songNum==NUM_OF_SONGS){
-            //Will be replaced by sth else
-            Toast t = Toast.makeText(getApplicationContext(),"END of two songs!", Toast.LENGTH_LONG);
-            t.show();
-
-
         }
     }
 
@@ -239,7 +225,7 @@ public class MainActivity extends Activity implements
     public void onPlaybackError(ErrorType errorType, String errorDetails) {
         Log.d("MainActivity", "Playback error received: " + errorType.name());
         switch (errorType) {
-               // Handle error type as necessary
+            // Handle error type as necessary
             default:
                 break;
         }
