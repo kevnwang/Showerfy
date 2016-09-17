@@ -13,7 +13,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start Showering!"
+        android:text="Press to Shower"
+        android:id="@+id/text1"
         android:layout_marginBottom="35dp"
         android:layout_above="@+id/imageButton"
         android:layout_centerHorizontal="true"

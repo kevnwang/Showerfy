@@ -4,6 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
@@ -23,6 +27,11 @@ public class MainActivity extends Activity implements
     // TODO: Replace with your redirect URI
     private static final String REDIRECT_URI = "showerfybigredhacks://callback";
 
+    ImageButton bigButton;
+    TextView bigText;
+    int state = 0;
+
+
     // Request code that will be passed together with authentication result to the onAuthenticationResult callback
     // Can be any integer
     private static final int REQUEST_CODE = 1337;
@@ -40,6 +49,38 @@ public class MainActivity extends Activity implements
         AuthenticationRequest request = builder.build();
 
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
+
+        addButtonListener();
+    }
+
+    private void addButtonListener() {
+        bigButton = (ImageButton) findViewById(R.id.imageButton);
+        bigText = (TextView) findViewById(R.id.text1);
+        bigButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                handleClick();
+            }
+        });
+    }
+
+    private void handleClick(){
+        switch (state){
+            case 0:
+                mPlayer.play("spotify:track:2TpxZ7JUBn3uw46aR7qd6V");
+                bigButton.setImageResource(R.drawable.icons2);
+                bigText.setText("Shower!");
+                state = 1;
+                break;
+            case 1:
+                mPlayer.pause();
+                bigButton.setImageResource(R.drawable.icons);
+                bigText.setText("Press to Shower");
+                state = 0;
+                break;
+
+        }
+
     }
 
     @Override
@@ -56,7 +97,7 @@ public class MainActivity extends Activity implements
                     public void onInitialized(Player player) {
                         mPlayer.addConnectionStateCallback(MainActivity.this);
                         mPlayer.addPlayerNotificationCallback(MainActivity.this);
-                        mPlayer.play("spotify:track:2TpxZ7JUBn3uw46aR7qd6V");
+                        //mPlayer.play("spotify:track:2TpxZ7JUBn3uw46aR7qd6V");
                     }
 
                     @Override
