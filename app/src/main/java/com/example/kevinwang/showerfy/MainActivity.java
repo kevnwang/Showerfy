@@ -46,6 +46,8 @@ public class MainActivity extends Activity implements
     private static String songTitle = "Take Me to Church";
 
     private Calendar timerStart;
+    private long songDuration=0;
+    private long songTimerStart;
 
     private static final int REQUEST_CODE = 1337;
 
@@ -118,12 +120,14 @@ public class MainActivity extends Activity implements
             case 0:
                 //mPlayer.play(activeUris.get(songNum));
                 mPlayer.play(chosenSong);
+                songTimerStart=System.currentTimeMillis();
                 bigButton.setImageResource(R.drawable.icons2);
                 bigText.setText("Shower!");
                 state = 1;
                 timerStart = Calendar.getInstance();
                 break;
             case 1:
+
                 mPlayer.pause();
                 bigButton.setImageResource(R.drawable.icons);
                 bigText.setText("Press to Shower");
@@ -143,6 +147,19 @@ public class MainActivity extends Activity implements
                     points += 20 / (mins - 2);
                 pointsText.setText("Points: " + points);
                 prefs.edit().putInt("points", points).apply();
+
+                long dt=timeDiff - songDuration;
+
+                if(songDuration!=0){
+
+                    badEnding(dt);
+
+                }
+                else{
+                    goodEnding();
+                }
+
+
                 break;
         }
     }
@@ -214,11 +231,27 @@ public class MainActivity extends Activity implements
                     state = 0;
                     handleClick();
                 }*/
-                state = 0;
+
+                songDuration = System.currentTimeMillis()-songTimerStart;
+
                 break;
             default:
                 break;
         }
+    }
+
+    private void badEnding(long dt){
+        Intent penalty = new Intent(this, PenaltyActivity.class);
+       String[] info = { songTitle , String.valueOf((double)dt)};
+        penalty.putExtra("info", info);
+        startActivity(penalty);
+    }
+
+    private void goodEnding(){
+        Intent success = new Intent(this, PenaltyActivity.class);
+        String[] info = { songTitle , String.valueOf(points)};
+        success.putExtra("info", info);
+        startActivity(success);
     }
 
     @Override

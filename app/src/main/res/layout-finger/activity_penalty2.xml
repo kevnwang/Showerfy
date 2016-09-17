@@ -30,7 +30,7 @@
         android:layout_width="152dp"
         android:layout_height="315dp"
         android:id="@+id/textView3"
-        android:text="You could have cooked X pots of mom&apos;s spaghetti with that water :("
+        android:text="2"
         android:textSize="30dp"
         android:layout_gravity="right" />
 

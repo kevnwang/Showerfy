@@ -30,7 +30,7 @@
         android:layout_width="152dp"
         android:layout_height="315dp"
         android:id="@+id/textView3"
-        android:text="The amount of extra water used is the same as X water bottles!"
+        android:text="1"
         android:textSize="30dp"
         android:layout_gravity="right" />
 
