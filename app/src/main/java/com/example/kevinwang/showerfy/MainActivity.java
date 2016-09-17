@@ -2,6 +2,7 @@ package com.example.kevinwang.showerfy;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -28,8 +29,10 @@ public class MainActivity extends Activity implements
     private static final String REDIRECT_URI = "showerfybigredhacks://callback";
 
     ImageButton bigButton;
-    TextView bigText;
-    int state = 0;
+    TextView bigText, pointsText;
+    private int state = 0;
+    private int points = 0;
+    private SharedPreferences prefs;
 
     private static String activeUri = "spotify:track:7GhIk7Il098yCjg4BQjzvb";
 
@@ -54,6 +57,11 @@ public class MainActivity extends Activity implements
 
         Intent songSelect = new Intent(this, SongSelectActivity.class);
         startActivityForResult(songSelect, 1);
+
+        prefs = getPreferences(0);
+        points = prefs.getInt("points",0);
+        pointsText = (TextView) findViewById(R.id.text_points);
+        pointsText.setText("Points: " + points);
 
         addButtonListener();
     }
@@ -82,6 +90,9 @@ public class MainActivity extends Activity implements
                 bigButton.setImageResource(R.drawable.icons);
                 bigText.setText("Press to Shower");
                 state = 0;
+                points ++;
+                pointsText.setText("Points: " + points);
+                prefs.edit().putInt("points", points).apply();
                 break;
         }
     }

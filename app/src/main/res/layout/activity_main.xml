@@ -16,12 +16,12 @@
         android:layout_height="wrap_content"
         android:text="Press to Shower"
         android:id="@+id/text1"
-        android:layout_marginBottom="35dp"
-        android:layout_above="@+id/imageButton"
-        android:layout_centerHorizontal="true"
         android:textSize="@dimen/abc_text_size_display_1_material"
         android:fontFamily="@string/abc_font_family_button_material"
-        android:textColor="#ffffff" />
+        android:textColor="#ffffff"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="71dp" />
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -32,4 +32,15 @@
         android:layout_marginBottom="89dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Text"
+        android:id="@+id/text_points"
+        android:layout_above="@+id/imageButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp"
+        android:textSize="@dimen/abc_text_size_large_material"
+        android:textColor="#ffffff" />
 </RelativeLayout>
