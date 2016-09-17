@@ -9,7 +9,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:screenOrientation="portrait"
     tools:context="com.example.kevinwang.showerfy.MainActivity"
-    android:background="#00dcff">
+    android:background="@drawable/bgrect">
 
     <TextView
         android:layout_width="wrap_content"
@@ -17,12 +17,12 @@
         android:text="Press to Shower"
         android:id="@+id/text1"
         android:textSize="@dimen/abc_text_size_display_1_material"
-        android:fontFamily="@string/abc_font_family_body_2_material"
-        android:textColor="#ffffff"
-        android:textStyle="bold"
+        android:fontFamily="Open Sans"
+        android:textColor="#00dcff"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="44dp" />
+        android:layout_marginTop="44dp"
+        android:typeface="serif" />
 
     <ImageButton
         android:layout_width="wrap_content"
@@ -40,10 +40,11 @@
         android:text="New Text"
         android:id="@+id/text_points"
         android:textSize="@dimen/abc_text_size_large_material"
-        android:textColor="#ffffff"
+        android:textColor="#00dcff"
         android:layout_below="@+id/text1"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp" />
+        android:layout_marginTop="30dp"
+        android:typeface="sans" />
 
     <ImageButton
         android:layout_width="wrap_content"

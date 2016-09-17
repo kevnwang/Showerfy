@@ -15,10 +15,7 @@ public class IndividualRecord {
     public String date, songTitle, timeStr, points, timeNum;
 
     public IndividualRecord(String d, String s, String t, String p) {
-        Date dd = new Date(Integer.parseInt(d));
-
-        SimpleDateFormat format = new SimpleDateFormat("MM/dd");
-        date = format.format(dd);
+        date = d;
 
         songTitle = s;
         int ms = Integer.parseInt(t);
