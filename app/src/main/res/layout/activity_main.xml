@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:text="Press to Shower"
         android:id="@+id/text1"
-        android:textSize="@dimen/abc_text_size_display_1_material"
+        android:textSize="@dimen/abc_text_size_display_2_material"
         android:fontFamily="Open Sans"
         android:textColor="#00dcff"
         android:layout_alignParentTop="true"

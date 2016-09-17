@@ -230,11 +230,6 @@ public class MainActivity extends Activity implements
         Log.d("MainActivity", "Playback event received: " + eventType.name());
         switch (eventType) {
             case END_OF_CONTEXT:
-                /*songNum++;
-                if (songNum < NUM_OF_SONGS) {
-                    state = 0;
-                    handleClick();
-                }*/
                 state = 0;
                 break;
             default:
