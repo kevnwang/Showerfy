@@ -51,3 +51,8 @@ Temporary Items
 build/
 local.properties
 *.gradle
+gradle/
+gradle.properties
+gradlew
+gradlew.bat
+Showerfy.iml
