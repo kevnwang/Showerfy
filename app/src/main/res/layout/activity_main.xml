@@ -43,4 +43,14 @@
         android:layout_marginBottom="32dp"
         android:textSize="@dimen/abc_text_size_large_material"
         android:textColor="#ffffff" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageButton2"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/mus"
+        android:background="#00ffffff" />
 </RelativeLayout>
