@@ -9,6 +9,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +27,8 @@ import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerNotificationCallback;
 import com.spotify.sdk.android.player.PlayerState;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends Activity implements
@@ -31,19 +37,21 @@ public class MainActivity extends Activity implements
     private static final String CLIENT_ID = "f023aedf8bf34ea5a638ae933f41e944";
     private static final String REDIRECT_URI = "showerfybigredhacks://callback";
 
-    ImageButton bigButton;
-    ImageButton smallButton;
-    TextView bigText, pointsText;
+    ImageButton bigButton, smallButton, histoButton;
+    TextView bigText, pointsText, songText;
     private int state = 0;
     private int points = 0;
     private int songNum = 0; //notes whether song playing is 1st or 2nd
+    public static final int NUM_OF_SONGS = 2;
+
     private SharedPreferences prefs;
 
-    private static String activeUri = "spotify:track:7GhIk7Il098yCjg4BQjzvb";
-    private Calendar timerStart;
+    private static String chosenSong = "spotify:track:7GhIk7Il098yCjg4BQjzvb";
+    private static String songTitle = "Take Me to Church";
 
-    // Request code that will be passed together with authentication result to the onAuthenticationResult callback
-    // Can be any integer
+    private Calendar timerStart;
+    private RotateAnimation r;
+
     private static final int REQUEST_CODE = 1337;
 
     private Player mPlayer;
@@ -68,19 +76,10 @@ public class MainActivity extends Activity implements
         pointsText = (TextView) findViewById(R.id.text_points);
         pointsText.setText(String.format("Points: %d", points));
 
-        addButtonListener();
-        addSmallButtonListener();
-
-        Bundle songName = getIntent().getExtras();
-        if(songName==null){
-            return;
-        }
-        activeUri = songName.getString("song");
-
-
+        addButtonListeners();
     }
 
-    private void addButtonListener() {
+    private void addButtonListeners() {
         bigButton = (ImageButton) findViewById(R.id.imageButton);
         bigText = (TextView) findViewById(R.id.text1);
         bigButton.setOnClickListener(new View.OnClickListener() {
@@ -90,9 +89,6 @@ public class MainActivity extends Activity implements
             }
         });
 
-    }
-
-    private void addSmallButtonListener(){
         smallButton = (ImageButton) findViewById(R.id.imageButton2);
         smallButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,25 +97,46 @@ public class MainActivity extends Activity implements
             }
         });
 
+        histoButton = (ImageButton) findViewById(R.id.imageButton3);
+        histoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                handleHistoClick();
+            }
+        });
     }
 
-    private void checkIfSongEnd(){
 
-    }
-
-    private void handleMusicClick(){
-        setContentView(R.layout.activity_main);
-
+    private void handleMusicClick() {
         Intent songSelect = new Intent(this, SongSelectActivity.class);
-        startActivityForResult(songSelect, 0);
-        finish();
+        startActivityForResult(songSelect, 1);
+    }
+
+    private void handleHistoClick() {
+        Intent histoView = new Intent(this, RecordsActivity.class);
+        startActivity(histoView);
     }
 
     @TargetApi(Build.VERSION_CODES.N)
     private void handleClick() {
         switch (state) {
             case 0:
-                mPlayer.play(activeUri);
+                ImageButton bigBut = (ImageButton) findViewById(R.id.imageButton);
+
+                AnimationSet animationSet = new AnimationSet(true);
+
+                r = new RotateAnimation(0f, 355f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f); // HERE
+                r.setDuration(1200);
+                LinearInterpolator bob = new LinearInterpolator();
+                r.setRepeatCount(Animation.INFINITE);
+                r.setFillAfter(true); //HERE
+                animationSet.addAnimation(r);
+                animationSet.setInterpolator(bob);
+                animationSet.setFillAfter(true); //HERE
+                bigBut.startAnimation(animationSet);
+
+                //mPlayer.play(activeUris.get(songNum));
+                mPlayer.play(chosenSong);
                 bigButton.setImageResource(R.drawable.icons2);
                 bigText.setText("Shower!");
                 state = 1;
@@ -128,6 +145,8 @@ public class MainActivity extends Activity implements
             case 1:
                 mPlayer.pause();
                 bigButton.setImageResource(R.drawable.icons);
+                r.setRepeatCount(0);
+                //r.setDuration(1000);
                 bigText.setText("Press to Shower");
                 state = 0;
                 long timeDiff = Calendar.getInstance().getTimeInMillis() - timerStart.getTimeInMillis();
@@ -153,7 +172,6 @@ public class MainActivity extends Activity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
 
-        // Check if result comes from the correct activity
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
             if (response.getType() == AuthenticationResponse.Type.TOKEN) {
@@ -161,6 +179,7 @@ public class MainActivity extends Activity implements
                 mPlayer = Spotify.getPlayer(playerConfig, this, new Player.InitializationObserver() {
                     @Override
                     public void onInitialized(Player player) {
+                        mPlayer = player;
                         mPlayer.addConnectionStateCallback(MainActivity.this);
                         mPlayer.addPlayerNotificationCallback(MainActivity.this);
                         //mPlayer.play("spotify:track:2TpxZ7JUBn3uw46aR7qd6V");
@@ -172,11 +191,11 @@ public class MainActivity extends Activity implements
                     }
                 });
             }
-        }
-        else if (requestCode == 1) {
+        } else if (requestCode == 1) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                activeUri = intent.getStringExtra("song");
+                chosenSong = intent.getStringArrayExtra("song")[0];
+                songTitle = intent.getStringArrayExtra("song")[1];
             }
         }
     }
@@ -210,19 +229,16 @@ public class MainActivity extends Activity implements
     public void onPlaybackEvent(EventType eventType, PlayerState playerState) {
         Log.d("MainActivity", "Playback event received: " + eventType.name());
         switch (eventType) {
-            case TRACK_END:
-                    songNum++;
+            case END_OF_CONTEXT:
+                /*songNum++;
+                if (songNum < NUM_OF_SONGS) {
+                    state = 0;
+                    handleClick();
+                }*/
+                state = 0;
                 break;
             default:
                 break;
-        }
-
-        if(songNum==2){
-            //Will be replaced by sth else
-            Toast t = Toast.makeText(getApplicationContext(),"END of two songs!", Toast.LENGTH_LONG);
-            t.show();
-
-            songNum=0;
         }
     }
 
@@ -230,7 +246,7 @@ public class MainActivity extends Activity implements
     public void onPlaybackError(ErrorType errorType, String errorDetails) {
         Log.d("MainActivity", "Playback error received: " + errorType.name());
         switch (errorType) {
-               // Handle error type as necessary
+            // Handle error type as necessary
             default:
                 break;
         }

@@ -29,12 +29,11 @@ public class SongSelectActivity extends Activity {
             "spotify:track:5xHooj89TQoQHj3dALvSh1",
             "spotify:track:3XWZ7PNB3ei50bTPzHhqA6",
             "spotify:track:1RdykyqZss4snJH9e58CQJ",
-            "spotify:track:7BKLCZ1jbUBVqRi2FVlTVw"
+            "spotify:track:0NSrjAJuxYqZiJ3sotJa6h"
     };
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_songselect);
 
         songSelectList = (ListView) findViewById(R.id.listView);
@@ -47,10 +46,10 @@ public class SongSelectActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 int itemPosition = position;
                 String itemValue = (String) songSelectList.getItemAtPosition(position);
-                Intent returnIntent = new Intent(SongSelectActivity.this,MainActivity.class);
-                returnIntent.putExtra("song", songUris[itemPosition]);
+                Intent returnIntent = new Intent();
+                String[] song = {songUris[itemPosition], songTitles[itemPosition]};
+                returnIntent.putExtra("song", song);
                 setResult(Activity.RESULT_OK, returnIntent);
-                startActivity(returnIntent);
                 finish();
             }
         });
