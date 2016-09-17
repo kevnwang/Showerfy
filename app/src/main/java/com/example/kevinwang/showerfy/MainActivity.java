@@ -23,6 +23,8 @@ import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerNotificationCallback;
 import com.spotify.sdk.android.player.PlayerState;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends Activity implements
@@ -36,9 +38,13 @@ public class MainActivity extends Activity implements
     private int state = 0;
     private int points = 0;
     private int songNum = 0; //notes whether song playing is 1st or 2nd
+    public static final int NUM_OF_SONGS = 2;
+
     private SharedPreferences prefs;
 
-    private static String activeUri = "spotify:track:7GhIk7Il098yCjg4BQjzvb";
+    private static List<String> activeUris = new ArrayList<String>(); //activeUris.add("spotify:track:7GhIk7Il098yCjg4BQjzvb");
+    private String[] chosenSongs;
+
     private Calendar timerStart;
 
     // Request code that will be passed together with authentication result to the onAuthenticationResult callback
@@ -69,11 +75,14 @@ public class MainActivity extends Activity implements
 
         addButtonListeners();
 
-        Bundle songName = getIntent().getExtras();
-        if(songName==null){
-            return;
+        Bundle songNames = getIntent().getExtras();
+
+        if(songNames!=null){
+            chosenSongs = songNames.getStringArray("songs");
+            for(int i=0;i<chosenSongs.length;i++){
+                activeUris.add(chosenSongs[i]);
+            }
         }
-        activeUri = songName.getString("song");
     }
 
     private void addButtonListeners() {
@@ -103,9 +112,6 @@ public class MainActivity extends Activity implements
         });
     }
 
-    private void checkIfSongEnd(){
-
-    }
 
     private void handleMusicClick(){
         Intent songSelect = new Intent(this, SongSelectActivity.class);
@@ -121,7 +127,7 @@ public class MainActivity extends Activity implements
     private void handleClick() {
         switch (state) {
             case 0:
-                mPlayer.play(activeUri);
+                mPlayer.play(activeUris.get(songNum));
                 bigButton.setImageResource(R.drawable.icons2);
                 bigText.setText("Shower!");
                 state = 1;
@@ -178,7 +184,7 @@ public class MainActivity extends Activity implements
         else if (requestCode == 1) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                activeUri = intent.getStringExtra("song");
+                chosenSongs = intent.getStringArrayExtra("song");
             }
         }
     }
@@ -212,14 +218,18 @@ public class MainActivity extends Activity implements
     public void onPlaybackEvent(EventType eventType, PlayerState playerState) {
         Log.d("MainActivity", "Playback event received: " + eventType.name());
         switch (eventType) {
-            case TRACK_END:
+            case END_OF_CONTEXT:
                     songNum++;
+                    if(songNum<NUM_OF_SONGS){
+                        state=0;
+                        handleClick();
+                    }
                 break;
             default:
                 break;
         }
 
-        if(songNum==2){
+        if(songNum==NUM_OF_SONGS){
             //Will be replaced by sth else
             Toast t = Toast.makeText(getApplicationContext(),"END of two songs!", Toast.LENGTH_LONG);
             t.show();
