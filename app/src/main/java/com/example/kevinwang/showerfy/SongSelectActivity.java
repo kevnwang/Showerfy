@@ -19,6 +19,7 @@ import java.util.List;
 public class SongSelectActivity extends Activity {
     private ListView songSelectList;
     private ArrayAdapter<String> adapter;
+    private int arrIndex=0; //helps assign songs in playlist.
     private final String[] songTitles = new String[]{
             "Rick Roll",
             "No Way No",
@@ -31,15 +32,19 @@ public class SongSelectActivity extends Activity {
             "spotify:track:5xHooj89TQoQHj3dALvSh1",
             "spotify:track:3XWZ7PNB3ei50bTPzHhqA6",
             "spotify:track:1RdykyqZss4snJH9e58CQJ",
-            "spotify:track:7BKLCZ1jbUBVqRi2FVlTVw"
+            "spotify:track:0NSrjAJuxYqZiJ3sotJa6h"
     };
 
-    private String[] chosenSongs = new String[2];
+    private String[] chosenSongs;
 
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_songselect);
+
+        chosenSongs = new String[2];
 
         songSelectList = (ListView) findViewById(R.id.listView);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, songTitles);
@@ -52,11 +57,13 @@ public class SongSelectActivity extends Activity {
                 int itemPosition = position;
                 String itemValue = (String) songSelectList.getItemAtPosition(position);
                 Intent returnIntent = new Intent(SongSelectActivity.this,MainActivity.class);
-                if(chosenSongs[0]==null){
-                    chosenSongs[0]=(songUris[itemPosition]);
+                if(arrIndex<MainActivity.NUM_OF_SONGS-1){
+                    chosenSongs[arrIndex]=(songUris[itemPosition]);
+                    arrIndex++;
                 }
                 else {
-                    chosenSongs[1]=(songUris[itemPosition]);
+                    chosenSongs[arrIndex]=(songUris[itemPosition]);
+                    arrIndex=0;
                     returnIntent.putExtra("songs", chosenSongs);
                     setResult(Activity.RESULT_OK, returnIntent);
                     startActivity(returnIntent);
