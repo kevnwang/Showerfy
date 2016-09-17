@@ -57,11 +57,12 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     // This library handles authentication and authorization
-    compile 'com.spotify.sdk:spotify-auth:beta21-noconnect-2.18c@aar'
+    compile 'com.spotify.sdk:spotify-auth:1.0.0-beta13@aar'
 
     // This library handles music playback
-    compile 'com.spotify.sdk:spotify-player:beta21-noconnect-2.18c@aar'
+    compile 'com.spotify.sdk:spotify-player:1.0.0-beta13@aar'
 
     // All other dependencies for your app should also be here:
     compile 'com.android.support:appcompat-v7:24.2.1'
+    testCompile 'junit:junit:4.12'
 }
