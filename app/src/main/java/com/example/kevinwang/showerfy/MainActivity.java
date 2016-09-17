@@ -52,7 +52,7 @@ import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
 import com.spotify.sdk.embedded.demo.R;
 
-public class DemoActivity extends Activity implements
+public class MainActivity extends Activity implements
         Player.NotificationCallback, ConnectionStateCallback {
     //   ____                _              _
     //  / ___|___  _ __  ___| |_ __ _ _ __ | |_ ___
