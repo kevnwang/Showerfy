@@ -2,10 +2,14 @@ package com.example.kevinwang.showerfy;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -15,8 +19,8 @@ import java.util.ArrayList;
  * Created by kevinwang on 9/17/16.
  */
 public class SongSelectActivity extends Activity {
-    private ListView songSelectList;
-    private ArrayAdapter<String> adapter;
+    private GridView SongGridView;
+    private GridViewAdapter gridAdapter;
     private final String[] songTitles = new String[]{
             "Rick Roll",
             "No Way No",
@@ -36,16 +40,15 @@ public class SongSelectActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_songselect);
 
-        songSelectList = (ListView) findViewById(R.id.listView);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, songTitles);
+        SongGridView = (GridView) findViewById(R.id.gridView);
+        gridAdapter = new GridViewAdapter(this, R.layout.grid_item_layout, getData());
+        SongGridView.setAdapter(gridAdapter);
 
-        songSelectList.setAdapter(adapter);
-
-        songSelectList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        SongGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
                 int itemPosition = position;
-                String itemValue = (String) songSelectList.getItemAtPosition(position);
+
                 Intent returnIntent = new Intent();
                 String[] song = {songUris[itemPosition], songTitles[itemPosition]};
                 returnIntent.putExtra("song", song);
@@ -53,6 +56,24 @@ public class SongSelectActivity extends Activity {
                 finish();
             }
         });
+    }
+
+    // Prepare some dummy data for gridview
+    private ArrayList<ImageItem> getData() {
+        final ArrayList<ImageItem> imageItems = new ArrayList<>();
+        TypedArray imgs = getResources().obtainTypedArray(R.array.image_ids);
+        for (int i = 0; i < imgs.length(); i++) {
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), imgs.getResourceId(i, -1));
+            imageItems.add(new ImageItem(bitmap, songTitles[i]));
+        }
+        return imageItems;
+    }
+
+
+
 
     }
-}
+
+
+
+
