@@ -58,8 +58,8 @@ public class MainActivity extends Activity implements
 
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
 
-        Intent songSelect = new Intent(this, SongSelectActivity.class);
-        startActivityForResult(songSelect, 1);
+        /*Intent songSelect = new Intent(this, SongSelectActivity.class);
+        startActivityForResult(songSelect, 1);*/
 
         prefs = getPreferences(0);
         points = prefs.getInt("points", 0);
@@ -95,7 +95,6 @@ public class MainActivity extends Activity implements
                 bigButton.setImageResource(R.drawable.icons);
                 bigText.setText("Press to Shower");
                 state = 0;
-                prefs.edit().putInt("points", points).apply();
                 long timeDiff = Calendar.getInstance().getTimeInMillis() - timerStart.getTimeInMillis();
                 Toast t = Toast.makeText(getApplicationContext(), "Shower time: " + String.format("%d min, %d sec",
                         TimeUnit.MILLISECONDS.toMinutes(timeDiff),
@@ -110,6 +109,7 @@ public class MainActivity extends Activity implements
                 else
                     points += 20 / (mins - 2);
                 pointsText.setText("Points: " + points);
+                prefs.edit().putInt("points", points).apply();
                 break;
         }
     }
@@ -138,7 +138,7 @@ public class MainActivity extends Activity implements
                 });
             }
         }
-        if (requestCode == 1) {
+        else if (requestCode == 1) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
                 activeUri = intent.getStringExtra("song");
@@ -195,6 +195,7 @@ public class MainActivity extends Activity implements
     protected void onDestroy() {
         // VERY IMPORTANT! This must always be called or else you will leak resources
         Spotify.destroyPlayer(this);
+
         super.onDestroy();
     }
 }
