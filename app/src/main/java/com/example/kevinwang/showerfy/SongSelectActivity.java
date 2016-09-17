@@ -43,7 +43,7 @@ public class SongSelectActivity extends Activity {
                 int itemPosition = position;
                 String itemValue = (String) songSelectList.getItemAtPosition(position);
                 Intent returnIntent = new Intent();
-                returnIntent.putExtra("song", itemValue);
+                returnIntent.putExtra("song", songUris[itemPosition]);
                 setResult(Activity.RESULT_OK, returnIntent);
                 finish();
             }

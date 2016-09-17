@@ -31,6 +31,8 @@ public class MainActivity extends Activity implements
     TextView bigText;
     int state = 0;
 
+    private static String activeUri = "spotify:track:7GhIk7Il098yCjg4BQjzvb";
+
 
     // Request code that will be passed together with authentication result to the onAuthenticationResult callback
     // Can be any integer
@@ -70,7 +72,7 @@ public class MainActivity extends Activity implements
     private void handleClick(){
         switch (state){
             case 0:
-                mPlayer.play("spotify:track:2TpxZ7JUBn3uw46aR7qd6V");
+                mPlayer.play(activeUri);
                 bigButton.setImageResource(R.drawable.icons2);
                 bigText.setText("Shower!");
                 state = 1;
@@ -111,8 +113,7 @@ public class MainActivity extends Activity implements
         if (requestCode == 1) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                Toast toast = Toast.makeText(getApplicationContext(), intent.getStringExtra("song"), Toast.LENGTH_SHORT);
-                toast.show();
+                activeUri = intent.getStringExtra("song");
             }
         }
     }
