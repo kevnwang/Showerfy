@@ -31,8 +31,7 @@ public class MainActivity extends Activity implements
     private static final String CLIENT_ID = "f023aedf8bf34ea5a638ae933f41e944";
     private static final String REDIRECT_URI = "showerfybigredhacks://callback";
 
-    ImageButton bigButton;
-    ImageButton smallButton;
+    ImageButton bigButton, smallButton, histoButton;
     TextView bigText, pointsText;
     private int state = 0;
     private int points = 0;
@@ -68,19 +67,16 @@ public class MainActivity extends Activity implements
         pointsText = (TextView) findViewById(R.id.text_points);
         pointsText.setText(String.format("Points: %d", points));
 
-        addButtonListener();
-        addSmallButtonListener();
+        addButtonListeners();
 
         Bundle songName = getIntent().getExtras();
         if(songName==null){
             return;
         }
         activeUri = songName.getString("song");
-
-
     }
 
-    private void addButtonListener() {
+    private void addButtonListeners() {
         bigButton = (ImageButton) findViewById(R.id.imageButton);
         bigText = (TextView) findViewById(R.id.text1);
         bigButton.setOnClickListener(new View.OnClickListener() {
@@ -90,9 +86,6 @@ public class MainActivity extends Activity implements
             }
         });
 
-    }
-
-    private void addSmallButtonListener(){
         smallButton = (ImageButton) findViewById(R.id.imageButton2);
         smallButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,6 +94,13 @@ public class MainActivity extends Activity implements
             }
         });
 
+        histoButton = (ImageButton) findViewById(R.id.imageButton3);
+        histoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                handleHistoClick();
+            }
+        });
     }
 
     private void checkIfSongEnd(){
@@ -108,11 +108,13 @@ public class MainActivity extends Activity implements
     }
 
     private void handleMusicClick(){
-        setContentView(R.layout.activity_main);
-
         Intent songSelect = new Intent(this, SongSelectActivity.class);
         startActivityForResult(songSelect, 0);
-        finish();
+    }
+
+    private void handleHistoClick(){
+        Intent histoView = new Intent(this, RecordsActivity.class);
+        startActivity(histoView);
     }
 
     @TargetApi(Build.VERSION_CODES.N)

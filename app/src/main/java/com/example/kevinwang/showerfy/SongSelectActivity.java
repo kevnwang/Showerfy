@@ -34,7 +34,6 @@ public class SongSelectActivity extends Activity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_songselect);
 
         songSelectList = (ListView) findViewById(R.id.listView);
