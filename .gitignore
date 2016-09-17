@@ -46,13 +46,10 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-.idea/
-.gradle/
-build/
-local.properties
-*.gradle
-gradle/
-gradle.properties
-gradlew
-gradlew.bat
-Showerfy.iml
+*.iml
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+/build
+/captures
