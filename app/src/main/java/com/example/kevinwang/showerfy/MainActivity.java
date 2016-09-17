@@ -9,6 +9,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +50,7 @@ public class MainActivity extends Activity implements
     private static String songTitle = "Take Me to Church";
 
     private Calendar timerStart;
+    private RotateAnimation r;
 
     private static final int REQUEST_CODE = 1337;
 
@@ -116,6 +121,20 @@ public class MainActivity extends Activity implements
     private void handleClick() {
         switch (state) {
             case 0:
+                ImageButton bigBut = (ImageButton) findViewById(R.id.imageButton);
+
+                AnimationSet animationSet = new AnimationSet(true);
+
+                r = new RotateAnimation(0f, 355f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f); // HERE
+                r.setDuration(1200);
+                LinearInterpolator bob = new LinearInterpolator();
+                r.setRepeatCount(Animation.INFINITE);
+                r.setFillAfter(true); //HERE
+                animationSet.addAnimation(r);
+                animationSet.setInterpolator(bob);
+                animationSet.setFillAfter(true); //HERE
+                bigBut.startAnimation(animationSet);
+
                 //mPlayer.play(activeUris.get(songNum));
                 mPlayer.play(chosenSong);
                 bigButton.setImageResource(R.drawable.icons2);
@@ -126,6 +145,8 @@ public class MainActivity extends Activity implements
             case 1:
                 mPlayer.pause();
                 bigButton.setImageResource(R.drawable.icons);
+                r.setRepeatCount(0);
+                //r.setDuration(1000);
                 bigText.setText("Press to Shower");
                 state = 0;
                 long timeDiff = Calendar.getInstance().getTimeInMillis() - timerStart.getTimeInMillis();
