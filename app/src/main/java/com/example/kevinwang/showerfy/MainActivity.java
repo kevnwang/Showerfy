@@ -34,7 +34,7 @@ public class MainActivity extends Activity implements
     private static final String REDIRECT_URI = "showerfybigredhacks://callback";
 
     ImageButton bigButton, smallButton, histoButton;
-    TextView bigText, pointsText;
+    TextView bigText, pointsText, songText;
     private int state = 0;
     private int points = 0;
     private int songNum = 0; //notes whether song playing is 1st or 2nd
@@ -43,6 +43,7 @@ public class MainActivity extends Activity implements
     private SharedPreferences prefs;
 
     private static String chosenSong = "spotify:track:7GhIk7Il098yCjg4BQjzvb";
+    private static String songTitle = "Take Me to Church";
 
     private Calendar timerStart;
 
@@ -172,7 +173,8 @@ public class MainActivity extends Activity implements
         } else if (requestCode == 1) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
-                chosenSong = intent.getStringExtra("song");
+                chosenSong = intent.getStringArrayExtra("song")[0];
+                songTitle = intent.getStringArrayExtra("song")[1];
             }
         }
     }
