@@ -9,23 +9,26 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class ShareActivity extends MainActivity{
+public class ShareActivity extends MainActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share);
 
-        String message = "I used Showerfy!";
+        Bundle data = getIntent().getExtras();
+        if (data == null) {
+            return;
+        }
+
+        String score = data.getString("stats");
+
+        String message = "I got a score of " + score + " points on Showerfy!";
         Intent share = new Intent(Intent.ACTION_SEND);
         share.setType("text/plain");
         share.putExtra(Intent.EXTRA_TEXT, message);
 
         startActivity(Intent.createChooser(share, "Share Showerfy with Friends!"));
     }
-
-
-
-
 }
 

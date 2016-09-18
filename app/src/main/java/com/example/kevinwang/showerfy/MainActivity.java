@@ -34,11 +34,12 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 public class MainActivity extends Activity implements
         PlayerNotificationCallback, ConnectionStateCallback {
 
+    public static String recordString;
+
     ImageButton bigButton, smallButton, histoButton;
     TextView bigText, pointsText;
-    private int state = 0, points = 0;
+    private int state = 0, points = 0, pointsGain = 0;
     private static SharedPreferences prefs;
-    static Calendar timerStart;
     private long songDuration = 0, songTimerStart;
     private RotateAnimation r;
 
@@ -67,6 +68,8 @@ public class MainActivity extends Activity implements
         points = prefs.getInt("points", 0);
         pointsText = (TextView) findViewById(R.id.text_points);
         pointsText.setText(String.format(getString(pointsTotal), points));
+        recordString = prefs.getString("history", "9/12,,My Gospel,,100000,,20;;9/13,,Cheap Thrills,,200000,,10");
+
 
         bigButton = (ImageButton) findViewById(R.id.imageButton);
         bigText = (TextView) findViewById(R.id.text1);
@@ -123,6 +126,7 @@ public class MainActivity extends Activity implements
 
                 mPlayer.play(chosenSong);
                 songTimerStart = System.currentTimeMillis();
+
                 bigButton.setImageResource(R.drawable.icons2);
                 bigText.setText(R.string.showeringNow);
                 state = 1;
@@ -133,7 +137,8 @@ public class MainActivity extends Activity implements
                 r.setRepeatCount(0);
                 bigText.setText(R.string.readyShower);
                 state = 0;
-                long timeDiff = Calendar.getInstance().getTimeInMillis() - timerStart.getTimeInMillis();
+                long timeDiff = Calendar.getInstance().getTimeInMillis() - songTimerStart;
+
                 Toast t = Toast.makeText(getApplicationContext(), "Shower time: " + String.format("%d min, %d sec",
                         MILLISECONDS.toMinutes(timeDiff),
                         MILLISECONDS.toSeconds(timeDiff) -
@@ -142,16 +147,35 @@ public class MainActivity extends Activity implements
                 t.show();
 
                 long mins = MILLISECONDS.toMinutes(timeDiff);
-                points += Math.min(20, 40.0f / mins);
-                pointsText.setText(getString(pointsTotal, points));
+                if (mins <= 2) {
+                    pointsGain = 20;
+                    points += pointsGain;
+                } else {
+                    pointsGain += 20 / (mins - 2);
+                    points += pointsGain;
+                }
+
+                pointsText.setText("Points: " + points);
                 prefs.edit().putInt("points", points).apply();
 
                 long dt = timeDiff - songDuration;
 
-                if (songDuration == 0)
+                android.text.format.DateFormat df = new android.text.format.DateFormat();
+
+                recordString += ";;" + df.format("MM/dd", new java.util.Date())
+                        + ",," + songTitle
+                        + ",," + timeDiff
+                        + ",," + pointsGain;
+
+                prefs.edit().putString("history", recordString).apply();
+
+                if (songDuration != 0) {
                     badEnding(dt);
-                else
+                } else {
                     goodEnding();
+                }
+
+                break;
         }
     }
 
@@ -217,6 +241,7 @@ public class MainActivity extends Activity implements
         switch (eventType) {
             case END_OF_CONTEXT:
                 songDuration = System.currentTimeMillis() - songTimerStart;
+                bigButton.setImageResource(R.drawable.over);
                 break;
             default:
                 break;
@@ -231,8 +256,10 @@ public class MainActivity extends Activity implements
     }
 
     private void goodEnding() {
-        Intent success = new Intent(this, PenaltyActivity.class);
-        String[] info = {songTitle, String.valueOf(points)};
+
+        Intent success = new Intent(this, SuccessActivity.class);
+        String[] info = {songTitle, String.valueOf(pointsGain), String.valueOf(points)};
+        pointsGain = 0;
         success.putExtra("info", info);
         startActivity(success);
     }

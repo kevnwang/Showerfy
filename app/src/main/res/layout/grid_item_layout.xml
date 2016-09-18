@@ -15,8 +15,9 @@
         android:id="@+id/text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
         android:gravity="center"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:padding="2dp"
+        android:singleLine="false" />
 
 </LinearLayout>

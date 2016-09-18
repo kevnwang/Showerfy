@@ -73,11 +73,7 @@ public class SongSelectActivity extends Activity {
         }
         return imageItems;
     }
-
-
-
-
-    }
+}
 
 
 
