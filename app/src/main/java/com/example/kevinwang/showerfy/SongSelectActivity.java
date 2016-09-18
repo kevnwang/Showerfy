@@ -22,14 +22,19 @@ public class SongSelectActivity extends Activity {
             "No Way No",
             "Sandstorm",
             "My Gospel",
-            "Closer"
+            "Closer",
+            "Shots-Broiler Remix",
+            "Don't Let Me Down"
+
     };
     private final String[] songUris = new String[]{
             "spotify:track:7GhIk7Il098yCjg4BQjzvb",
             "spotify:track:5xHooj89TQoQHj3dALvSh1",
             "spotify:track:3XWZ7PNB3ei50bTPzHhqA6",
             "spotify:track:1RdykyqZss4snJH9e58CQJ",
-            "spotify:track:0NSrjAJuxYqZiJ3sotJa6h"
+            "spotify:track:7BKLCZ1jbUBVqRi2FVlTVw",
+            "spotify:track:3iQHc5Mk6yN1ntBjJYD89H",
+            "spotify:track:1i1fxkWeaMmKEB4T7zqbzK"
     };
 
     protected void onCreate(Bundle savedInstanceState) {

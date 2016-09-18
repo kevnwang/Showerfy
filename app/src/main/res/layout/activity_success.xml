@@ -11,7 +11,7 @@
         android:layout_height="100dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Song name\nShower length\nPoints earned"
-        android:id="@+id/info"
+        android:id="@+id/infor"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="15dp"
         android:textSize="50dp"
