@@ -10,9 +10,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-/**
- * Created by josep on 9/17/2016.
- */
 public class RecordAdapter extends ArrayAdapter<IndividualRecord> {
     private ArrayList<IndividualRecord> records;
     private Context context;

@@ -17,7 +17,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
@@ -26,36 +25,29 @@ import com.spotify.sdk.android.player.ConnectionStateCallback;
 import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.PlayerNotificationCallback;
 import com.spotify.sdk.android.player.PlayerState;
+import com.spotify.sdk.android.player.Spotify;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import static com.example.kevinwang.showerfy.R.string.pointsTotal;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 public class MainActivity extends Activity implements
         PlayerNotificationCallback, ConnectionStateCallback {
 
-    private static final String CLIENT_ID = "f023aedf8bf34ea5a638ae933f41e944";
-    private static final String REDIRECT_URI = "showerfybigredhacks://callback";
-
     ImageButton bigButton, smallButton, histoButton;
-    TextView bigText, pointsText, songText;
-    private int state = 0;
-    private int points = 0;
-    private int songNum = 0; //notes whether song playing is 1st or 2nd
-    public static final int NUM_OF_SONGS = 2;
-
-    private SharedPreferences prefs;
-
-    private static String chosenSong = "spotify:track:7GhIk7Il098yCjg4BQjzvb";
-    private static String songTitle = "Take Me to Church";
-
-    private Calendar timerStart;
-    private long songDuration=0;
-    private long songTimerStart;
+    TextView bigText, pointsText;
+    private int state = 0, points = 0;
+    private static SharedPreferences prefs;
+    static Calendar timerStart;
+    private long songDuration = 0, songTimerStart;
     private RotateAnimation r;
 
+    //SPOTIFY FIELDS
+    private static String chosenSong = "spotify:track:7GhIk7Il098yCjg4BQjzvb";
+    private static String songTitle = "Take Me to Church";
+    private static final String CLIENT_ID = "f023aedf8bf34ea5a638ae933f41e944";
+    private static final String REDIRECT_URI = "showerfybigredhacks://callback";
     private static final int REQUEST_CODE = 1337;
-
     private Player mPlayer;
 
     @Override
@@ -63,25 +55,18 @@ public class MainActivity extends Activity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Spotify login intent
         AuthenticationRequest.Builder builder =
                 new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
         builder.setScopes(new String[]{"user-read-private", "streaming"});
         AuthenticationRequest request = builder.build();
-
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
-
-        /*Intent songSelect = new Intent(this, SongSelectActivity.class);
-        startActivityForResult(songSelect, 1);*/
 
         prefs = getPreferences(0);
         points = prefs.getInt("points", 0);
         pointsText = (TextView) findViewById(R.id.text_points);
-        pointsText.setText(String.format("Points: %d", points));
+        pointsText.setText(String.format(getString(pointsTotal), points));
 
-        addButtonListeners();
-    }
-
-    private void addButtonListeners() {
         bigButton = (ImageButton) findViewById(R.id.imageButton);
         bigText = (TextView) findViewById(R.id.text1);
         bigButton.setOnClickListener(new View.OnClickListener() {
@@ -108,7 +93,6 @@ public class MainActivity extends Activity implements
         });
     }
 
-
     private void handleMusicClick() {
         Intent songSelect = new Intent(this, SongSelectActivity.class);
         startActivityForResult(songSelect, 1);
@@ -127,23 +111,20 @@ public class MainActivity extends Activity implements
 
                 AnimationSet animationSet = new AnimationSet(true);
 
-                r = new RotateAnimation(0f, 355f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f); // HERE
+                r = new RotateAnimation(0f, 355f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                 r.setDuration(1200);
-                LinearInterpolator bob = new LinearInterpolator();
                 r.setRepeatCount(Animation.INFINITE);
-                r.setFillAfter(true); //HERE
+                r.setFillAfter(true);
                 animationSet.addAnimation(r);
-                animationSet.setInterpolator(bob);
-                animationSet.setFillAfter(true); //HERE
+                animationSet.setInterpolator(new LinearInterpolator());
+                animationSet.setFillAfter(true);
                 bigBut.startAnimation(animationSet);
 
-                //mPlayer.play(activeUris.get(songNum));
                 mPlayer.play(chosenSong);
-                songTimerStart=System.currentTimeMillis();
+                songTimerStart = System.currentTimeMillis();
                 bigButton.setImageResource(R.drawable.icons2);
-                bigText.setText("Shower!");
+                bigText.setText(R.string.showeringNow);
                 state = 1;
-                timerStart = Calendar.getInstance();
                 break;
             case 1:
 
@@ -151,38 +132,29 @@ public class MainActivity extends Activity implements
                 bigButton.setImageResource(R.drawable.icons);
                 r.setRepeatCount(0);
                 //r.setDuration(1000);
-                bigText.setText("Press to Shower");
+                bigText.setText(R.string.readyShower);
                 state = 0;
                 long timeDiff = Calendar.getInstance().getTimeInMillis() - timerStart.getTimeInMillis();
 
                 Toast t = Toast.makeText(getApplicationContext(), "Shower time: " + String.format("%d min, %d sec",
-                        TimeUnit.MILLISECONDS.toMinutes(timeDiff),
-                        TimeUnit.MILLISECONDS.toSeconds(timeDiff) -
-                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeDiff))
+                        MILLISECONDS.toMinutes(timeDiff),
+                        MILLISECONDS.toSeconds(timeDiff) -
+                                MINUTES.toSeconds(MILLISECONDS.toMinutes(timeDiff))
                 ), Toast.LENGTH_LONG);
-               t.show();
+                t.show();
 
+                long mins = MILLISECONDS.toMinutes(timeDiff);
+                points += Math.min(20, 40.0f / mins);
 
-                long mins = TimeUnit.MILLISECONDS.toMinutes(timeDiff);
-                if (mins <= 2)
-                    points += 20;
-                else
-                    points += 20 / (mins - 2);
-                pointsText.setText("Points: " + points);
+                pointsText.setText(getString(pointsTotal, points));
                 prefs.edit().putInt("points", points).apply();
 
-                long dt=timeDiff - songDuration;
+                long dt = timeDiff - songDuration;
 
-                if(songDuration==0){
-
+                if (songDuration == 0)
                     badEnding(dt);
-
-                }
-                else{
+                else
                     goodEnding();
-                }
-
-
                 break;
         }
     }
@@ -190,7 +162,7 @@ public class MainActivity extends Activity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-
+        //SPOTIFY CALLBACKS
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
             if (response.getType() == AuthenticationResponse.Type.TOKEN) {
@@ -201,7 +173,6 @@ public class MainActivity extends Activity implements
                         mPlayer = player;
                         mPlayer.addConnectionStateCallback(MainActivity.this);
                         mPlayer.addPlayerNotificationCallback(MainActivity.this);
-                        //mPlayer.play("spotify:track:2TpxZ7JUBn3uw46aR7qd6V");
                     }
 
                     @Override
@@ -249,13 +220,8 @@ public class MainActivity extends Activity implements
         Log.d("MainActivity", "Playback event received: " + eventType.name());
         switch (eventType) {
             case END_OF_CONTEXT:
-                /*songNum++;
-                if (songNum < NUM_OF_SONGS) {
-                    state = 0;
-                    handleClick();
-                }*/
 
-                songDuration = System.currentTimeMillis()-songTimerStart;
+                songDuration = System.currentTimeMillis() - songTimerStart;
 
                 break;
             default:
@@ -263,16 +229,16 @@ public class MainActivity extends Activity implements
         }
     }
 
-    private void badEnding(long dt){
+    private void badEnding(long dt) {
         Intent penalty = new Intent(this, PenaltyActivity.class);
-       String[] info = { songTitle , String.valueOf((double)dt)};
+        String[] info = {songTitle, String.valueOf((double) dt)};
         penalty.putExtra("info", info);
         startActivity(penalty);
     }
 
-    private void goodEnding(){
+    private void goodEnding() {
         Intent success = new Intent(this, PenaltyActivity.class);
-        String[] info = { songTitle , String.valueOf(points)};
+        String[] info = {songTitle, String.valueOf(points)};
         success.putExtra("info", info);
         startActivity(success);
     }
@@ -280,18 +246,12 @@ public class MainActivity extends Activity implements
     @Override
     public void onPlaybackError(ErrorType errorType, String errorDetails) {
         Log.d("MainActivity", "Playback error received: " + errorType.name());
-        switch (errorType) {
-            // Handle error type as necessary
-            default:
-                break;
-        }
     }
 
     @Override
     protected void onDestroy() {
         // VERY IMPORTANT! This must always be called or else you will leak resources
         Spotify.destroyPlayer(this);
-
         super.onDestroy();
     }
 }
