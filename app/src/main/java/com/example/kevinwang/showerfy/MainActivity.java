@@ -5,14 +5,20 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.icu.util.Calendar;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.appindexing.Action;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
@@ -29,11 +35,13 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends Activity implements
         PlayerNotificationCallback, ConnectionStateCallback {
-
     private static final String CLIENT_ID = "f023aedf8bf34ea5a638ae933f41e944";
     private static final String REDIRECT_URI = "showerfybigredhacks://callback";
 
-    ImageButton bigButton, smallButton, histoButton;
+    ImageButton bigButton;
+    ImageButton smallButton;
+    ImageButton histoButton;
+    Button shareButton;
     TextView bigText, pointsText, songText;
     private int state = 0;
     private int points = 0;
@@ -50,6 +58,11 @@ public class MainActivity extends Activity implements
     private static final int REQUEST_CODE = 1337;
 
     private Player mPlayer;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +85,9 @@ public class MainActivity extends Activity implements
         pointsText.setText(String.format("Points: %d", points));
 
         addButtonListeners();
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
     private void addButtonListeners() {
@@ -99,6 +115,14 @@ public class MainActivity extends Activity implements
                 handleHistoClick();
             }
         });
+
+        shareButton = (Button) findViewById(R.id.shareButton);
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                handleShareClick();
+            }
+        });
     }
 
 
@@ -110,6 +134,11 @@ public class MainActivity extends Activity implements
     private void handleHistoClick() {
         Intent histoView = new Intent(this, RecordsActivity.class);
         startActivity(histoView);
+    }
+
+    private void handleShareClick() {
+        Intent shareScore = new Intent(this, ShareActivity.class);
+        startActivity(shareScore);
     }
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -179,6 +208,8 @@ public class MainActivity extends Activity implements
         }
     }
 
+
+
     @Override
     public void onLoggedIn() {
         Log.d("MainActivity", "User logged in");
@@ -237,5 +268,45 @@ public class MainActivity extends Activity implements
         Spotify.destroyPlayer(this);
 
         super.onDestroy();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client.connect();
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://com.example.kevinwang.showerfy/http/host/path")
+        );
+        AppIndex.AppIndexApi.start(client, viewAction);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        Action viewAction = Action.newAction(
+                Action.TYPE_VIEW, // TODO: choose an action type.
+                "Main Page", // TODO: Define a title for the content shown.
+                // TODO: If you have web page content that matches this app activity's content,
+                // make sure this auto-generated web page URL is correct.
+                // Otherwise, set the URL to null.
+                Uri.parse("http://host/path"),
+                // TODO: Make sure this auto-generated app URL is correct.
+                Uri.parse("android-app://com.example.kevinwang.showerfy/http/host/path")
+        );
+        AppIndex.AppIndexApi.end(client, viewAction);
+        client.disconnect();
     }
 }
