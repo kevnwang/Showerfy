@@ -9,6 +9,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,6 +41,7 @@ public class MainActivity extends Activity implements
     TextView bigText, pointsText, songText;
     private int state = 0;
     private int points = 0;
+    private int pointsGain=0;
     private int songNum = 0; //notes whether song playing is 1st or 2nd
     public static final int NUM_OF_SONGS = 2;
 
@@ -46,6 +51,9 @@ public class MainActivity extends Activity implements
     private static String songTitle = "Take Me to Church";
 
     private Calendar timerStart;
+    private long songDuration=0;
+    private long songTimerStart;
+    private RotateAnimation r;
 
     private static final int REQUEST_CODE = 1337;
 
@@ -116,33 +124,70 @@ public class MainActivity extends Activity implements
     private void handleClick() {
         switch (state) {
             case 0:
+                ImageButton bigBut = (ImageButton) findViewById(R.id.imageButton);
+
+                AnimationSet animationSet = new AnimationSet(true);
+
+                r = new RotateAnimation(0f, 355f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f); // HERE
+                r.setDuration(1200);
+                LinearInterpolator bob = new LinearInterpolator();
+                r.setRepeatCount(Animation.INFINITE);
+                r.setFillAfter(true); //HERE
+                animationSet.addAnimation(r);
+                animationSet.setInterpolator(bob);
+                animationSet.setFillAfter(true); //HERE
+                bigBut.startAnimation(animationSet);
+
                 //mPlayer.play(activeUris.get(songNum));
                 mPlayer.play(chosenSong);
+                songTimerStart=System.currentTimeMillis();
                 bigButton.setImageResource(R.drawable.icons2);
                 bigText.setText("Shower!");
                 state = 1;
                 timerStart = Calendar.getInstance();
                 break;
             case 1:
+
                 mPlayer.pause();
                 bigButton.setImageResource(R.drawable.icons);
+                r.setRepeatCount(0);
+                //r.setDuration(1000);
                 bigText.setText("Press to Shower");
                 state = 0;
                 long timeDiff = Calendar.getInstance().getTimeInMillis() - timerStart.getTimeInMillis();
+
                 Toast t = Toast.makeText(getApplicationContext(), "Shower time: " + String.format("%d min, %d sec",
                         TimeUnit.MILLISECONDS.toMinutes(timeDiff),
                         TimeUnit.MILLISECONDS.toSeconds(timeDiff) -
                                 TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeDiff))
                 ), Toast.LENGTH_LONG);
-                t.show();
+               t.show();
+
 
                 long mins = TimeUnit.MILLISECONDS.toMinutes(timeDiff);
-                if (mins <= 2)
-                    points += 20;
+                if (mins <= 2){
+                    pointsGain=20;
+                    points += pointsGain;}
                 else
-                    points += 20 / (mins - 2);
+                {   pointsGain += 20 / (mins - 2);
+                    points += pointsGain;}
+
                 pointsText.setText("Points: " + points);
                 prefs.edit().putInt("points", points).apply();
+
+                long dt=timeDiff - songDuration;
+
+                if(songDuration!=0){
+
+                    badEnding(dt);
+
+                }
+                else{
+
+                    goodEnding();
+                }
+
+
                 break;
         }
     }
@@ -214,11 +259,29 @@ public class MainActivity extends Activity implements
                     state = 0;
                     handleClick();
                 }*/
-                state = 0;
+
+                songDuration = System.currentTimeMillis()-songTimerStart;
+
                 break;
             default:
                 break;
         }
+    }
+
+    private void badEnding(long dt){
+        Intent penalty = new Intent(this, PenaltyActivity.class);
+       String[] info = { songTitle , String.valueOf((double)dt)};
+        penalty.putExtra("info", info);
+        startActivity(penalty);
+    }
+
+    private void goodEnding(){
+
+        Intent success = new Intent(this, SuccessActivity.class);
+        String[] info = { songTitle , String.valueOf(pointsGain), String.valueOf(points)};
+        pointsGain=0;
+        success.putExtra("info", info);
+        startActivity(success);
     }
 
     @Override

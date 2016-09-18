@@ -21,6 +21,7 @@ public class SuccessActivity extends Activity{
 
     private Button share;
     TextView infor;
+    String totalScore;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,8 +37,10 @@ public class SuccessActivity extends Activity{
         infor = (TextView) findViewById(R.id.infor);
         infor.setText(info[0]+"\n"+"Points Earned: "+info[1]);
 
+        totalScore=info[2];
 
         addButtonListener();
+
 
     }
 
@@ -52,9 +55,11 @@ public class SuccessActivity extends Activity{
     }
 
     private void handleClick() {
-        //// TODO: 9/17/16 Add Sam's component
-        Toast t = Toast.makeText(getApplicationContext(),"SHARE WITH THE WORLD!", Toast.LENGTH_LONG);
-        t.show();
+
+        Intent share = new Intent(this, ShareActivity.class);
+        share.putExtra("stats", totalScore);
+        startActivity(share);
+
 
     }
 
