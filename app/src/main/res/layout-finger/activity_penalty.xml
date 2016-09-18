@@ -27,7 +27,7 @@
         android:textAlignment="center" />
 
     <TextView
-        android:layout_width="152dp"
+        android:layout_width="180dp"
         android:layout_height="315dp"
         android:id="@+id/textView3"
         android:text="1"

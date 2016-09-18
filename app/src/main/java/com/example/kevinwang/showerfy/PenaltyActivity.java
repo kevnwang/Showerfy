@@ -19,29 +19,37 @@ import android.widget.Toast;
 import java.util.*;
 
 public class PenaltyActivity extends Activity{
-    private Random rand;
+
     private Button returnButton;
     TextView song, overtime, message;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        rand = new Random();
-        int screenChoice = rand.nextInt()*2+1;
-        if(screenChoice==1){
-            setContentView(R.layout.activity_penalty);
-        }
-        else if(screenChoice==2){
-            setContentView(R.layout.activity_penalty2);
-        }
-        else{
-            setContentView(R.layout.activity_penalty3);
-        }
-
         Bundle data = getIntent().getExtras();
         if(data==null){return;}
-
         String[] info = data.getStringArray("info");
+        int screenChoice=0;
+        boolean passTest=false;
+        while(!passTest){
+
+            screenChoice = (int)(Math.random() * 3) + 1;
+            if(screenChoice==1){
+                setContentView(R.layout.activity_penalty);
+                passTest=true;
+            }
+            else if(screenChoice==2){
+                setContentView(R.layout.activity_penalty2);
+                passTest=true;
+            }
+            else{
+                if(Double.valueOf(info[1])>=180000.0){
+                    setContentView(R.layout.activity_penalty3);
+                    passTest=true;
+                }
+
+            }
+        }
+
 
         song = (TextView) findViewById(R.id.textView2);
         overtime = (TextView) findViewById(R.id.textView);
@@ -53,15 +61,19 @@ public class PenaltyActivity extends Activity{
         int seconds=0;
         int minutes=0;
         double overtimee = Double.valueOf(info[1]);
-        overtimee/=1000;
-        if(overtimee>=60){
-            minutes = (int)overtimee/60;
-            seconds = (int)(overtimee)%60;
+        overtimee/=1000.0;
+        if(overtimee>=60) {
+            minutes = (int)(overtimee / 60.0);
+
         }
+        seconds = (int)(overtimee%60.0);
+
+
 
         overtime.setText("OVERTIME: "+String.valueOf(minutes)+" mins, "+ String.valueOf(seconds)+" secs");
         double num=0;
         String messageStr="";
+
         if(screenChoice==1){
             num = overtimee/60.0*2.1/2.1*13;
             messageStr = "The amount of extra water used is the same as X water bottles!";
@@ -74,11 +86,12 @@ public class PenaltyActivity extends Activity{
             num = overtimee/60.0*2.1/7;
             messageStr = "You essentially dehydrated X gorillas to death...";
         }
-        int x = (int)Math.round(num);
+        if(num%1<4){num=(int)num;}
+        else{num=(int)(num+.5);}
 
         for(int i=0;i<messageStr.length();i++){
             if(messageStr.charAt(i)=='X'){
-                String newMessage =messageStr.substring(0,i-2)+" "+x+" "+messageStr.substring(i+2,messageStr.length());
+                String newMessage =messageStr.substring(0,i-1)+" "+(int)num+" "+messageStr.substring(i+2,messageStr.length());
                 message.setText(newMessage);
                 break;
             }
@@ -104,8 +117,9 @@ public class PenaltyActivity extends Activity{
     }
 
     private void handleClick() {
-        Intent returnIntent = new Intent(this,SongSelectActivity.class);
+        Intent returnIntent = new Intent(this,MainActivity.class);
         startActivity(returnIntent);
+        finish();
     }
 
 }

@@ -154,12 +154,14 @@ public class MainActivity extends Activity implements
                 bigText.setText("Press to Shower");
                 state = 0;
                 long timeDiff = Calendar.getInstance().getTimeInMillis() - timerStart.getTimeInMillis();
+
                 Toast t = Toast.makeText(getApplicationContext(), "Shower time: " + String.format("%d min, %d sec",
                         TimeUnit.MILLISECONDS.toMinutes(timeDiff),
                         TimeUnit.MILLISECONDS.toSeconds(timeDiff) -
                                 TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(timeDiff))
                 ), Toast.LENGTH_LONG);
-                t.show();
+               t.show();
+
 
                 long mins = TimeUnit.MILLISECONDS.toMinutes(timeDiff);
                 if (mins <= 2)
@@ -171,7 +173,7 @@ public class MainActivity extends Activity implements
 
                 long dt=timeDiff - songDuration;
 
-                if(songDuration!=0){
+                if(songDuration==0){
 
                     badEnding(dt);
 
