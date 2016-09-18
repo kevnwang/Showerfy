@@ -41,6 +41,7 @@ public class MainActivity extends Activity implements
     TextView bigText, pointsText, songText;
     private int state = 0;
     private int points = 0;
+    private int pointsGain=0;
     private int songNum = 0; //notes whether song playing is 1st or 2nd
     public static final int NUM_OF_SONGS = 2;
 
@@ -164,33 +165,25 @@ public class MainActivity extends Activity implements
 
 
                 long mins = TimeUnit.MILLISECONDS.toMinutes(timeDiff);
-
-                if (timeDiff <= 10000) {
-                    pointsText.setText("You are the Flash");
-                    pointsText.postDelayed(new Runnable() {
-                        public void run() {
-                            pointsText.setText("Points: " + points);
-                        }
-                    }, 2000);
-
-                } else {
-                    if (mins <= 2)
-                        points += 20;
-                    else
-                        points += 20 / (mins - 2);
+                if (mins <= 2){
+                    pointsGain=20;
+                    points += pointsGain;}
+                else
+                {   pointsGain += 20 / (mins - 2);
+                    points += pointsGain;}
 
                 pointsText.setText("Points: " + points);
-        }
                 prefs.edit().putInt("points", points).apply();
 
                 long dt=timeDiff - songDuration;
 
-                if(songDuration==0){
+                if(songDuration!=0){
 
                     badEnding(dt);
 
                 }
                 else{
+
                     goodEnding();
                 }
 
@@ -283,8 +276,10 @@ public class MainActivity extends Activity implements
     }
 
     private void goodEnding(){
-        Intent success = new Intent(this, PenaltyActivity.class);
-        String[] info = { songTitle , String.valueOf(points)};
+
+        Intent success = new Intent(this, SuccessActivity.class);
+        String[] info = { songTitle , String.valueOf(pointsGain)};
+        pointsGain=0;
         success.putExtra("info", info);
         startActivity(success);
     }
