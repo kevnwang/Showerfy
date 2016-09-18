@@ -47,6 +47,7 @@ public class MainActivity extends Activity implements
     private static String songTitle = "Take Me to Church";
     private static final String CLIENT_ID = "f023aedf8bf34ea5a638ae933f41e944";
     private static final String REDIRECT_URI = "showerfybigredhacks://callback";
+
     private static final int REQUEST_CODE = 1337;
     private Player mPlayer;
 
@@ -127,15 +128,12 @@ public class MainActivity extends Activity implements
                 state = 1;
                 break;
             case 1:
-
                 mPlayer.pause();
                 bigButton.setImageResource(R.drawable.icons);
                 r.setRepeatCount(0);
-                //r.setDuration(1000);
                 bigText.setText(R.string.readyShower);
                 state = 0;
                 long timeDiff = Calendar.getInstance().getTimeInMillis() - timerStart.getTimeInMillis();
-
                 Toast t = Toast.makeText(getApplicationContext(), "Shower time: " + String.format("%d min, %d sec",
                         MILLISECONDS.toMinutes(timeDiff),
                         MILLISECONDS.toSeconds(timeDiff) -
@@ -145,7 +143,6 @@ public class MainActivity extends Activity implements
 
                 long mins = MILLISECONDS.toMinutes(timeDiff);
                 points += Math.min(20, 40.0f / mins);
-
                 pointsText.setText(getString(pointsTotal, points));
                 prefs.edit().putInt("points", points).apply();
 
@@ -155,7 +152,6 @@ public class MainActivity extends Activity implements
                     badEnding(dt);
                 else
                     goodEnding();
-                break;
         }
     }
 
@@ -220,9 +216,7 @@ public class MainActivity extends Activity implements
         Log.d("MainActivity", "Playback event received: " + eventType.name());
         switch (eventType) {
             case END_OF_CONTEXT:
-
                 songDuration = System.currentTimeMillis() - songTimerStart;
-
                 break;
             default:
                 break;

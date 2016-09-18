@@ -66,4 +66,15 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SHARE"
+        android:textSize="24sp"
+        android:textColor = "#fff"
+        android:id="@+id/shareButton"
+        android:layout_alignTop="@+id/imageButton3"
+        android:layout_centerHorizontal="true"
+        android:background="#00f"/>
+
 </RelativeLayout>
